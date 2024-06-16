@@ -56,7 +56,6 @@ public void preencherEmailInvalido(  String email){
         System.out.println("Mensagem para validar " + mensagem);
     }
     public void acessarCadastroUsuario(){
-
         getDriver().findElement(By.id("createAccount")).click();
     }
     public void preencherNome(){
