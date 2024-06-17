@@ -2,6 +2,7 @@ package runner;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 import java.time.Duration;
@@ -19,6 +20,15 @@ public class RunBase {
         }
 
         switch (browser) {
+            case "chrome-ci":
+                ChromeOptions option = new ChromeOptions();
+                option.addArguments("--headless");
+                option.addArguments("--disable-gpu");
+                option.addArguments("--window-size=1920,1080");
+                option.addArguments("--disable-extensions");
+                option.addArguments("--no-sandbox");
+                driver = new ChromeDriver(option);
+                break;
             case "chrome":
                 driver = new ChromeDriver();
                 break;
