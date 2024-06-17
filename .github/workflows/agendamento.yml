@@ -2,7 +2,7 @@ name: Smoke Testes - Agendado
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+  - cron: '14 11 * * *'
 
 jobs:
   RunTest:
@@ -45,3 +45,29 @@ jobs:
         with:
           name: report-execution
           path: '**/formated-report/'
+
+      - name: Notificação Slack - Sucesso
+        if: ${{ success() }}
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: resultado-automacao-testes
+          SLACK_COLOR: ${{ job_status }}
+          SLACK_ICON: https://static-00.iconduck.com/assets.00/ok-icon-512x460-0is9zeph.png
+          SLACK_MESSAGE: "Sucesso na execução de testes do PR :white_check_mark:"
+          SLACK_TITLE: "Sucesso na execução de testes do PR :white_check_mark:"
+          SLACK_USERNAME: SUCESSO
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Notificação Slack - Falha
+        if: ${{ failure() }}
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: resultado-automacao-testes
+          SLACK_COLOR: danger
+          SLACK_ICON: https://cdn-icons-png.flaticon.com/512/6889/6889521.png
+          SLACK_MESSAGE: "Falha na execução de testes do PR :fire:"
+          SLACK_TITLE: "Falha na execução de testes do PR :fire:"
+          SLACK_USERNAME: FALHA
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+
