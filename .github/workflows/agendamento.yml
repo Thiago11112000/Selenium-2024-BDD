@@ -2,7 +2,7 @@ name: Smoke Testes - Agendado
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+  - cron: '14 11 * * *'
 
 jobs:
   RunTest:
@@ -19,18 +19,17 @@ jobs:
           java-version: '17'
           cache: maven
 
+      - name: Instalar Chrome e ChromeDriver
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: '126'
+          install-chromedriver: true
+          install-dependencies: true
 
-      - name: Instalar Chrome
+      - name: Configurar Ambiente de Execução
         run: |
-          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-          sudo dpkg -i google-chrome-stable_current_amd64.deb
-
-      - name: Instalar chrome driver
-        uses: nanasess/setup-chromedriver@v2
-      -  run: |
-          export DISPLAY=:99
           sudo Xvfb :99 -ac -screen 0 1280x1024x24 > /dev/null 2>&1 &
-          chromedriver --url-base=/wd/hub &
+          export DISPLAY=:99
 
       - name: Run Tests
         run: mvn test -Dtest=RunTests -Dbrowser=chrome-ci -Denv=dev
@@ -45,3 +44,28 @@ jobs:
         with:
           name: report-execution
           path: '**/formated-report/'
+
+      - name: Notificação Slack - Sucesso
+        if: success()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: resultado-automacao-testes
+          SLACK_COLOR: good
+          SLACK_ICON: https://static-00.iconduck.com/assets.00/ok-icon-512x460-0is9zeph.png
+          SLACK_MESSAGE: "Sucesso na execução de testes do PR :white_check_mark:"
+          SLACK_TITLE: "Sucesso na execução de testes do PR :white_check_mark:"
+          SLACK_USERNAME: SUCESSO
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Notificação Slack - Falha
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: resultado-automacao-testes
+          SLACK_COLOR: danger
+          SLACK_ICON: https://cdn-icons-png.flaticon.com/512/6889/6889521.png
+          SLACK_MESSAGE: "Falha na execução de testes do PR :fire:"
+          SLACK_TITLE: "Falha na execução de testes do PR :fire:"
+          SLACK_USERNAME: FALHA
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
