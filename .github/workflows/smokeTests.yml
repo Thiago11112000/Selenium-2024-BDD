@@ -22,7 +22,7 @@ jobs:
       - name: Instalar Chrome e ChromeDriver
         uses: browser-actions/setup-chrome@v1
         with:
-          chrome-version: '120'
+          chrome-version: '126'
           install-chromedriver: true
           install-dependencies: true
 
